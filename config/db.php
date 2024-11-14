@@ -7,17 +7,13 @@ $username = 'root';
 $password = '';
 
 // Crear nueva instancia de PDO para conectar a la base de datos
+try {
+    $db = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
 
-try{
-    $db = new PDO("mysql:host = $host;dbname = $dbname;charset = utf8",
-                $username,
-                $password);
-
-    $db->setAttribute(PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "Conexión realizada";
-    
-} catch (PDOException){
+
+} catch (PDOException $e) {
     echo "Error de conexión: " . $e->getMessage();
     exit;
-};
+}
