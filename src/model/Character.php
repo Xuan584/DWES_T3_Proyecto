@@ -154,11 +154,15 @@ class Character{
     }
 
     public function save(){
-        $stmt=$this->db->prepare("INSERT INTO characters(name,description,health,strength,defense) VALUES (:name,:description,:health,:strength,:defense)");
-        $stmt->bindValue(':name',$this->getName());
+        $stmt = $this->db->prepare("INSERT INTO characters (name, description, health, strength, defense ) VALUES (:name, :description, :health, :strength, :defense)");
+        $stmt->bindValue(':name', $this->getName());
         $stmt->bindValue(':description', $this->getDescription());
         $stmt->bindValue(':health', $this->getHealth());
         $stmt->bindValue(':strength', $this->getStrength());
         $stmt->bindValue(':defense', $this->getDefense());
+
+
+        return $stmt->execute();
+        
     }
 }
