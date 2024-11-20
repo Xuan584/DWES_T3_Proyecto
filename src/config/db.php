@@ -1,10 +1,10 @@
 <?php
 
 // Configuración de la base de datos
-$host = 'localhost';
-$dbname = 'dwes_proyecto_t3';
-$username = 'root';
-$password = '';
+$host = 'db';
+$dbname = 'dwes_t3_rpg_clase';
+$username = 'user';
+$password = 'userpassword';
 
 // Crear nueva instancia de PDO para conectar a la base de datos
 try {

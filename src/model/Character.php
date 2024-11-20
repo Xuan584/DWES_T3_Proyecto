@@ -7,8 +7,11 @@ class Character{
     protected $strength;
     protected $defense;
     protected $image;
+    protected $db;
 
-    
+    public function __construct($db){
+        $this->db=$db;
+    }
 
     /**
      * Get the value of id
@@ -148,5 +151,14 @@ class Character{
         $this->description = $description;
 
         return $this;
+    }
+
+    public function save(){
+        $stmt=$this->db->prepare("INSERT INTO characters(name,description,health,strength,defense) VALUES (:name,:description,:health,:strength,:defense)");
+        $stmt->bindValue(':name',$this->getName());
+        $stmt->bindValue(':description', $this->getDescription());
+        $stmt->bindValue(':health', $this->getHealth());
+        $stmt->bindValue(':strength', $this->getStrength());
+        $stmt->bindValue(':defense', $this->getDefense());
     }
 }

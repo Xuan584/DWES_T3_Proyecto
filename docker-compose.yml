@@ -1,0 +1,42 @@
+
+services:
+  web:
+    build: ./docker/apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html   
+    depends_on:
+      - db
+    networks:
+      - backend_network
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dwes_t3_rpg_clase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend_network
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db  # Nombre del servicio de MySQL
+      MYSQL_ROOT_PASSWORD: rootpassword  # Debe coincidir con la contraseña de root de MySQL
+    ports:
+      - "8081:80"  # Exponer phpMyAdmin en el puerto 8081
+    depends_on:
+      - db
+    networks:
+      - backend_network
+      
+networks:
+  backend_network:
+    driver: bridge
