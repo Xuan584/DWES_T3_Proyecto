@@ -1,7 +1,8 @@
 <?php
 require_once "../../config/db.php";
+require_once "../../model/Enemy.php";
 
-// Obtener enemigos
+// Consultar los enemigos existentes
 $enemies = [];
 try {
     $stmt = $db->query("SELECT * FROM enemies");
@@ -16,22 +17,22 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Enemigos</title>
+    <title>Editar Enemigos</title>
 </head>
 <body>
     <?php include("../partials/_menu.php"); ?>
 
-    <h1>Lista de Enemigos</h1>
+    <h1>Editar Enemigos</h1>
     <table border="1">
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
-                <th>¿Es jefe?</th>
+                <th>Boss</th>
                 <th>Vida</th>
                 <th>Fuerza</th>
                 <th>Defensa</th>
-                <th>Acciones</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -44,8 +45,10 @@ try {
                     <td><?= $enemy['strength']; ?></td>
                     <td><?= $enemy['defense']; ?></td>
                     <td>
-                        <a href="edit_enemy.php?id=<?= $enemy['id']; ?>">Editar</a>
-                        <a href="delete_enemy.php?id=<?= $enemy['id']; ?>">Eliminar</a>
+                        <form action="edit_enemy_form.php" method="GET">
+                            <input type="hidden" name="id" value="<?= $enemy['id']; ?>">
+                            <button type="submit">Editar</button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -53,7 +56,9 @@ try {
     </table>
 
     <div>
-        <a href="create_enemy.php">Crear Enemigo</a>
+        <button><a href="create_enemy.php">Crear Enemigos</a></button>
+        <button><a href="delete_enemy.php">Borrar Enemigos</a></button>
+        <button><a href="edit_enemy.php">Editar Enemigos</a></button>
     </div>
 </body>
 </html>
