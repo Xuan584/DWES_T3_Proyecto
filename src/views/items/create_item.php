@@ -88,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><?= htmlspecialchars($item['type']); ?></td>
                     <td><?= $item['effect']; ?></td>
                     <td>
-                        <a href="edit_item.php?id=<?= $item['id']; ?>">Editar</a>
-                        <a href="delete_item.php?id=<?= $item['id']; ?>" onclick="return confirm('¿Estás seguro de borrar este ítem?');">Borrar</a>
+                        <a href="edit_item_form.php?id=<?= $item['id']; ?>">Editar</a>
+                        <a href="delete_item.php">Borrar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

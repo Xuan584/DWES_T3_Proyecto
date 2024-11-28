@@ -100,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><?= $enemy['strength']; ?></td>
                     <td><?= $enemy['defense']; ?></td>
                     <td>
-                        <a href="edit_enemy.php?id=<?= $enemy['id']; ?>">Editar</a>
-                        <a href="delete_enemy.php?id=<?= $enemy['id']; ?>" onclick="return confirm('¿Estás seguro de borrar este enemigo?');">Borrar</a>
+                        <a href="edit_enemy_form.php?id=<?= $enemy['id']; ?>">Editar</a>
+                        <a href="delete_enemy.php">Borrar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

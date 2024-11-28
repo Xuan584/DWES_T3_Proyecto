@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td><?= $character['strength']; ?></td>
                     <td><?= $character['defense']; ?></td>
                     <td>
-                        <a href="edit_character.php?id=<?= $character['id']; ?>">Editar</a>
-                        <a href="delete_character.php?id=<?= $character['id']; ?>" onclick="return confirm('¿Estás seguro de borrar este personaje?');">Borrar</a>
+                        <a href="edit_character_form.php?id=<?= $character['id']; ?>">Editar</a>
+                        <a href="delete_character.php">Borrar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

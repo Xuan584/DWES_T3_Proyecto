@@ -2,59 +2,103 @@
 require_once "../../config/db.php";
 require_once "../../model/Enemy.php";
 
-$enemies = [];
-
-try {
-    $stmt = $db->query("SELECT * FROM enemies");
-    $enemies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Error al leer la base de datos: " . $e->getMessage();
+// Verificar si se recibió el ID del enemigo
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    die("ID de enemigo no proporcionado.");
 }
 
-include("../partials/_menu.php");
+$id = $_GET['id'];
+
+// Obtener los datos del enemigo
+$enemy = null;
+try {
+    $stmt = $db->prepare("SELECT * FROM enemies WHERE id = :id");
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $enemy = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$enemy) {
+        die("Enemigo no encontrado.");
+    }
+} catch (PDOException $e) {
+    die("Error al consultar la base de datos: " . $e->getMessage());
+}
+
+// Procesar la edición si se envía el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $stmt = $db->prepare("
+            UPDATE enemies 
+            SET name = :name, 
+                description = :description, 
+                isBoss = :isBoss, 
+                health = :health, 
+                strength = :strength, 
+                defense = :defense 
+            WHERE id = :id
+        ");
+        $stmt->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
+        $stmt->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
+        $stmt->bindValue(':isBoss', isset($_POST['isBoss']) ? 1 : 0, PDO::PARAM_INT);
+        $stmt->bindValue(':health', $_POST['health'], PDO::PARAM_INT);
+        $stmt->bindValue(':strength', $_POST['strength'], PDO::PARAM_INT);
+        $stmt->bindValue(':defense', $_POST['defense'], PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            header("Location: edit_enemy.php");
+            exit;
+        } else {
+            echo "Error al actualizar el enemigo.";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
 ?>
 
-<h1>Lista de enemigos</h1>
-<table>
-    <thead>
-        <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>¿Es jefe?</th>
-            <th>PV</th>
-            <th>Fuerza</th>
-            <th>Defensa</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($enemies as $enemy): ?>
-            <tr>
-                <td>img</td> <!-- Puedes ajustar este campo para mostrar una imagen real -->
-                <td><?= htmlspecialchars($enemy['name']); ?></td>
-                <td><?= htmlspecialchars($enemy['description']); ?></td>
-                <td><?= $enemy['isBoss'] ? 'Sí' : 'No'; ?></td>
-                <td><?= $enemy['health']; ?></td>
-                <td><?= $enemy['strength']; ?></td>
-                <td><?= $enemy['defense']; ?></td>
-                <td>
-                    <form action="edit_enemy_form.php" method="GET">
-                        <input type="hidden" name="id" value="<?= $enemy['id']; ?>">
-                        <button type="submit">Editar</button>
-                    </form>
-                    <form action="delete_enemy.php" method="POST">
-                        <input type="hidden" name="id" value="<?= $enemy['id']; ?>">
-                        <button type="submit">Borrar</button>
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Enemigo</title>
+</head>
+<body>
+    <?php include("../partials/_menu.php"); ?>
 
-<div>
-    <button><a href="create_enemy.php">Crear Enemigos</a></button>
-    <button><a href="delete_enemy.php">Borrar Enemigos</a></button>
-    <button><a href="edit_enemy.php">Editar Enemigos</a></button>
-</div>
+    <h1>Editar Enemigo</h1>
+    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) . '?id=' . $id ?>" method="POST">
+        <div>
+            <label for="nameInput">Nombre:</label>
+            <input type="text" name="name" id="nameInput" value="<?= htmlspecialchars($enemy['name']); ?>" required>
+        </div>
+        <div>
+            <label for="descriptionInput">Descripción:</label>
+            <input type="text" name="description" id="descriptionInput" value="<?= htmlspecialchars($enemy['description']); ?>" required>
+        </div>
+        <div>
+            <label for="isBossInput">¿Es jefe?:</label>
+            <input type="checkbox" name="isBoss" id="isBossInput" <?= $enemy['isBoss'] ? 'checked' : ''; ?>>
+        </div>
+        <div>
+            <label for="healthInput">Puntos de Vida:</label>
+            <input type="number" name="health" id="healthInput" value="<?= $enemy['health']; ?>" min="1" required>
+        </div>
+        <div>
+            <label for="strengthInput">Fuerza:</label>
+            <input type="number" name="strength" id="strengthInput" value="<?= $enemy['strength']; ?>" min="1" required>
+        </div>
+        <div>
+            <label for="defenseInput">Defensa:</label>
+            <input type="number" name="defense" id="defenseInput" value="<?= $enemy['defense']; ?>" min="1" required>
+        </div>
+        <div>
+            <button type="submit">Guardar Cambios</button>
+            <a href="edit_enemy.php">
+                <button type="button">Cancelar</button>
+            </a>
+        </div>
+    </form>
+</body>
+</html>
